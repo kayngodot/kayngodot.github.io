@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Hexo</title>
+  
+  
+  <link href="https://kayngodot.github.io/atom.xml" rel="self"/>
+  
+  <link href="https://kayngodot.github.io/"/>
+  <updated>2024-02-10T16:10:20.288Z</updated>
+  <id>https://kayngodot.github.io/</id>
+  
+  <author>
+    <name>John Doe</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title></title>
+    <link href="https://kayngodot.github.io/2024/02/11/friends/"/>
+    <id>https://kayngodot.github.io/2024/02/11/friends/</id>
+    <published>2024-02-10T16:09:47.757Z</published>
+    <updated>2024-02-10T16:10:20.288Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">[{&quot;avatar&quot;:&quot;http://image.luokangyuan.com/1_qq_27922023.jpg&quot;,&quot;name&quot;:&quot;码酱&quot;,&quot;introduction&quot;:&quot;我不是大佬，只是在追寻大佬的脚步&quot;,&quot;url&quot;:&quot;http://luokangyuan.com/&quot;,&quot;t</summary>
+        
+      
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title></title>
+    <link href="https://kayngodot.github.io/2024/02/10/ren-sheng-hui-you-chong-feng-ma/"/>
+    <id>https://kayngodot.github.io/2024/02/10/ren-sheng-hui-you-chong-feng-ma/</id>
+    <published>2024-02-10T15:59:36.788Z</published>
+    <updated>2024-02-10T15:18:04.102Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;今天是2024年2月10日，大年初一，窗外有烟花，它们升空、闪烁、轰鸣，随后永远消失在漫漫长夜里。我没由来地想，同样好看的烟花会再有，但每个烟花终究还是不一样的，升上天空消失了的就永远消失了。这种永恒的失去会让我感到万分的悲伤。&lt;/p&gt;
+&lt;p&gt;在2022年夏天，一场持续了三</summary>
+        
+      
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>article title</title>
+    <link href="https://kayngodot.github.io/2024/02/10/article-title/"/>
+    <id>https://kayngodot.github.io/2024/02/10/article-title/</id>
+    <published>2024-02-10T15:55:38.000Z</published>
+    <updated>2024-02-10T15:55:38.669Z</updated>
+    
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Hello World</title>
+    <link href="https://kayngodot.github.io/2024/02/10/hello-world/"/>
+    <id>https://kayngodot.github.io/2024/02/10/hello-world/</id>
+    <published>2024-02-10T15:49:34.485Z</published>
+    <updated>2024-02-10T15:49:34.485Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.io/docs/&quot;&gt;documentation&lt;/a&gt;</summary>
+        
+      
+    
+    
+    
+    
+  </entry>
+  
+</feed>
