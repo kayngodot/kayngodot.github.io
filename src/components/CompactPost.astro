@@ -1,0 +1,19 @@
+---
+import type { Post } from "../lib/posts";
+import { formatDate, postUrl } from "../lib/posts";
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const date = formatDate(post.data.date);
+---
+
+<a class="compact-post" href={postUrl(post)}>
+  <span class="compact-post__title">{post.data.title}</span>
+  <span class="compact-post__side">
+    {post.data.draft && <span class="draft-badge">草稿</span>}
+    <time datetime={date}>{date}</time>
+  </span>
+</a>

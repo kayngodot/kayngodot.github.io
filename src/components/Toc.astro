@@ -1,0 +1,114 @@
+---
+import type { MarkdownHeading } from "astro";
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+const items = Astro.props.headings.filter(
+  (heading) => (heading.depth === 2 || heading.depth === 3) && heading.slug,
+);
+---
+
+{
+  items.length > 0 && (
+    <>
+      <aside class="toc" data-toc aria-label="目录">
+        <div class="toc__head">
+          <span class="toc__label">目录</span>
+          <button
+            class="toc__toggle"
+            type="button"
+            data-toc-toggle
+            aria-expanded="true"
+            aria-label="收起目录"
+          >
+            −
+          </button>
+        </div>
+        <nav class="toc__items">
+          {items.map((heading) => (
+            <a
+              class:list={["toc__item", `toc__item--level-${heading.depth}`]}
+              href={`#${heading.slug}`}
+            >
+              {heading.text}
+            </a>
+          ))}
+        </nav>
+      </aside>
+
+      <details class="toc-mobile">
+        <summary>目录</summary>
+        <nav class="toc__items">
+          {items.map((heading) => (
+            <a
+              class:list={["toc__item", `toc__item--level-${heading.depth}`]}
+              href={`#${heading.slug}`}
+            >
+              {heading.text}
+            </a>
+          ))}
+        </nav>
+      </details>
+    </>
+  )
+}
+
+<script>
+  const mobileToc = document.querySelector<HTMLDetailsElement>(".toc-mobile");
+  mobileToc?.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      mobileToc.removeAttribute("open");
+    });
+  });
+
+  const toc = document.querySelector<HTMLElement>("[data-toc]");
+
+  if (toc) {
+    const toggle = toc.querySelector<HTMLButtonElement>("[data-toc-toggle]");
+    const links = Array.from(toc.querySelectorAll<HTMLAnchorElement>(".toc__item"));
+    const targets = links
+      .map((link) => document.getElementById(decodeURIComponent(link.hash.slice(1))))
+      .filter((element): element is HTMLElement => Boolean(element));
+
+    toggle?.addEventListener("click", () => {
+      const collapsed = toc.classList.toggle("is-collapsed");
+      toggle.setAttribute("aria-expanded", String(!collapsed));
+      toggle.textContent = collapsed ? "＋" : "−";
+      toggle.setAttribute("aria-label", collapsed ? "展开目录" : "收起目录");
+    });
+
+    const setActive = () => {
+      let current = targets[0]?.id ?? "";
+      for (const target of targets) {
+        if (target.getBoundingClientRect().top <= 140) {
+          current = target.id;
+        } else {
+          break;
+        }
+      }
+
+      for (const link of links) {
+        const isActive = decodeURIComponent(link.hash.slice(1)) === current;
+        link.classList.toggle("is-active", isActive);
+      }
+    };
+
+    let ticking = false;
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(() => {
+          setActive();
+          ticking = false;
+        });
+      },
+      { passive: true },
+    );
+
+    setActive();
+  }
+</script>

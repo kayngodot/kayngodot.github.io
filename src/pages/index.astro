@@ -1,0 +1,47 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import CompactPost from "../components/CompactPost.astro";
+import { SITE } from "../../blog.config.mjs";
+import { getPosts, postsInBoard, withBase } from "../lib/posts";
+
+const posts = await getPosts();
+const panels = SITE.boards.map((board) => ({
+  board,
+  posts: postsInBoard(posts, board.key),
+}));
+---
+
+<BaseLayout active="home">
+  <section class="home-intro shell shell--wide">
+    <h1>{SITE.title}</h1>
+    {SITE.tagline && <p class="home-intro__subtitle">{SITE.tagline}</p>}
+  </section>
+
+  <div class="board-grid shell shell--wide">
+    {
+      panels.map(({ board, posts: boardPosts }) => (
+        <section
+          class="board-panel"
+          data-board={board.key}
+          style={`--accent:${board.accent}`}
+        >
+          <div class="board-panel__head">
+            <span>{boardPosts.length} 篇文章</span>
+          </div>
+          <h2>{board.title}</h2>
+          <div class="board-panel__posts">
+            {boardPosts.slice(0, SITE.homeLatest).map((post) => (
+              <CompactPost post={post} />
+            ))}
+            {boardPosts.length === 0 && (
+              <p class="empty-state">还没有文章。</p>
+            )}
+          </div>
+          <a class="board-panel__more" href={withBase(`/${board.key}/`)}>
+            查看全部 <span aria-hidden="true">→</span>
+          </a>
+        </section>
+      ))
+    }
+  </div>
+</BaseLayout>

@@ -1,0 +1,72 @@
+---
+import { SITE } from "../../blog.config.mjs";
+import { withBase } from "../lib/posts";
+
+interface Props {
+  active?: string;
+}
+
+const { active = "" } = Astro.props;
+---
+
+<header class="site-header">
+  <div class="shell shell--wide site-header__inner">
+    <a class="brand" href={withBase("/")}>
+      <span class="brand__title">{SITE.title}</span>
+    </a>
+
+    <button
+      class="menu-toggle"
+      type="button"
+      data-menu-toggle
+      aria-expanded="false"
+      aria-controls="site-nav"
+    >
+      菜单
+    </button>
+
+    <nav class="site-nav" id="site-nav" data-menu aria-label="主导航">
+      <a
+        class:list={["site-nav__link", { "is-active": active === "home" }]}
+        href={withBase("/")}
+        aria-current={active === "home" ? "page" : undefined}>首页</a
+      >
+      {
+        SITE.boards.map((board) => (
+          <a
+            class:list={[
+              "site-nav__link",
+              { "is-active": active === board.key },
+            ]}
+            href={withBase(`/${board.key}/`)}
+            aria-current={active === board.key ? "page" : undefined}
+          >
+            {board.title}
+          </a>
+        ))
+      }
+      <a
+        class:list={["site-nav__link", { "is-active": active === "archives" }]}
+        href={withBase("/archives/")}
+        aria-current={active === "archives" ? "page" : undefined}>归档</a
+      >
+      <a
+        class:list={["site-nav__link", { "is-active": active === "tags" }]}
+        href={withBase("/tags/")}
+        aria-current={active === "tags" ? "page" : undefined}>标签</a
+      >
+      <a
+        class="site-nav__search"
+        href={withBase("/search/")}
+        aria-label="搜索"
+        title="搜索"
+        aria-current={active === "search" ? "page" : undefined}
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="10.5" cy="10.5" r="5.75"></circle>
+          <path d="m15 15 4.25 4.25"></path>
+        </svg>
+      </a>
+    </nav>
+  </div>
+</header>

@@ -1,0 +1,2 @@
+/* 等宽字体只在文章页需要，单独加载，避免拖慢首页 */
+@import "lxgw-wenkai-screen-web/lxgwwenkaimonoscreen/result.css";

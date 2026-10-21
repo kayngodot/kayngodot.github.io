@@ -1,0 +1,47 @@
+---
+import type { Post } from "../lib/posts";
+import {
+  boardOf,
+  excerptOf,
+  formatDate,
+  postUrl,
+  readingMinutes,
+  tagUrl,
+} from "../lib/posts";
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const board = boardOf(post);
+const url = postUrl(post);
+const date = formatDate(post.data.date);
+---
+
+<article class="post-card" data-board={board.key} style={`--accent:${board.accent}`}>
+  <div>
+    <div class="post-card__meta">
+      <span>{date}</span>
+      <span aria-hidden="true">·</span>
+      <span>{board.title}</span>
+      <span aria-hidden="true">·</span>
+      <span>{readingMinutes(post)} 分钟</span>
+      {post.data.draft && <span class="draft-badge">草稿</span>}
+    </div>
+    <h2><a href={url}>{post.data.title}</a></h2>
+    <p>{excerptOf(post)}</p>
+    {
+      post.data.tags.length > 0 && (
+        <div class="post-card__tags">
+          {post.data.tags.map((tag) => (
+            <a class="pill" href={tagUrl(tag)}>
+              {tag}
+            </a>
+          ))}
+        </div>
+      )
+    }
+  </div>
+  <a class="post-card__arrow" href={url} aria-label={`阅读《${post.data.title}》`}>→</a>
+</article>

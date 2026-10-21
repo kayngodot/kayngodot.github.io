@@ -1,0 +1,196 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { SITE } from "../../../blog.config.mjs";
+import { withBase } from "../../lib/posts";
+
+// 每次构建换一个版本号，避免浏览器或 CDN 缓存旧索引
+const indexUrl = `${withBase("/search-index.json")}?v=${Date.now().toString(36)}`;
+---
+
+<BaseLayout
+  title="搜索"
+  description="搜索标题、标签或正文。"
+  active="search"
+>
+  <section class="page-intro shell">
+    <h1>搜索</h1>
+  </section>
+
+  <section
+    class="search-page shell"
+    data-search
+    data-index-url={indexUrl}
+  >
+    <label class="search-box">
+      <input
+        type="search"
+        placeholder={SITE.searchPlaceholder}
+        data-search-input
+        aria-label="搜索文章"
+        autocomplete="off"
+      />
+    </label>
+    <p
+      class="search-meta"
+      data-search-meta
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      输入关键词，标题、标签和正文都会被搜索。
+    </p>
+    <div data-search-results></div>
+  </section>
+</BaseLayout>
+
+<script>
+  type SearchItem = {
+    title: string;
+    url: string;
+    date: string;
+    board: string;
+    tags: string[];
+    description: string;
+    text: string;
+  };
+
+  const root = document.querySelector<HTMLElement>("[data-search]");
+
+  if (root) {
+    const input = root.querySelector<HTMLInputElement>("[data-search-input]");
+    const results = root.querySelector<HTMLElement>("[data-search-results]");
+    const meta = root.querySelector<HTMLElement>("[data-search-meta]");
+    const endpoint = root.dataset.indexUrl || "/search-index.json";
+
+    let items: SearchItem[] = [];
+    let loaded = false;
+
+    const escapeHtml = (value: string) =>
+      value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+
+    const highlight = (text: string, query: string) => {
+      if (!query) return escapeHtml(text);
+      const haystack = text.toLowerCase();
+      const needle = query.toLowerCase();
+      let pos = 0;
+      let index = 0;
+      let html = "";
+
+      while ((index = haystack.indexOf(needle, pos)) !== -1) {
+        html += escapeHtml(text.slice(pos, index));
+        html += `<mark>${escapeHtml(text.slice(index, index + query.length))}</mark>`;
+        pos = index + query.length;
+      }
+
+      html += escapeHtml(text.slice(pos));
+      return html;
+    };
+
+    const scoreItem = (item: SearchItem, query: string) => {
+      const q = query.toLowerCase();
+      const title = item.title.toLowerCase();
+      const tags = item.tags.join(" ").toLowerCase();
+      const description = item.description.toLowerCase();
+      const text = item.text.toLowerCase();
+
+      let score = 0;
+      if (title.includes(q)) score += 8;
+      if (title.startsWith(q)) score += 6;
+      if (tags.includes(q)) score += 4;
+      if (description.includes(q)) score += 2;
+      if (text.includes(q)) score += 1;
+      return score;
+    };
+
+    const snippetOf = (item: SearchItem, query: string) => {
+      const raw = item.text || item.description;
+      const index = raw.toLowerCase().indexOf(query.toLowerCase());
+      if (index === -1) {
+        const head = raw.slice(0, 130);
+        return head + (raw.length > 130 ? "…" : "");
+      }
+      const start = Math.max(0, index - 55);
+      const end = Math.min(raw.length, index + query.length + 95);
+      return `${start > 0 ? "…" : ""}${raw.slice(start, end)}${end < raw.length ? "…" : ""}`;
+    };
+
+    const render = (query: string) => {
+      if (!results || !meta) return;
+
+      const q = query.trim();
+      if (!q) {
+        results.innerHTML = "";
+        meta.textContent = "输入关键词，标题、标签和正文都会被搜索。";
+        return;
+      }
+
+      const matched = items
+        .map((item) => ({ item, score: scoreItem(item, q) }))
+        .filter(({ score }) => score > 0)
+        .sort((a, b) => b.score - a.score || b.item.date.localeCompare(a.item.date))
+        .slice(0, 30);
+
+      meta.textContent = matched.length
+        ? `找到 ${matched.length} 篇相关文章${matched.length === 30 ? "（最多显示 30 篇）" : ""}`
+        : "没有找到相关文章。";
+
+      results.innerHTML = matched
+        .map(({ item }) => {
+          const tags = item.tags
+            .map((tag) => `<span class="pill">${escapeHtml(tag)}</span>`)
+            .join("");
+
+          return `<article class="search-result">
+            <div class="search-result__meta">${escapeHtml(item.date)} · ${escapeHtml(item.board)}</div>
+            <h2><a href="${escapeHtml(item.url)}">${highlight(item.title, q)}</a></h2>
+            <p>${highlight(snippetOf(item, q), q)}</p>
+            ${tags ? `<div class="search-result__tags">${tags}</div>` : ""}
+          </article>`;
+        })
+        .join("");
+    };
+
+    const load = async () => {
+      if (loaded) return;
+      const response = await fetch(endpoint);
+      items = (await response.json()) as SearchItem[];
+      loaded = true;
+    };
+
+    const run = async () => {
+      try {
+        await load();
+      } catch {
+        if (meta) meta.textContent = "搜索索引加载失败，请刷新页面重试。";
+        return;
+      }
+      const query = input?.value ?? "";
+      render(query);
+      const url = new URL(window.location.href);
+      if (query.trim()) {
+        url.searchParams.set("q", query.trim());
+        window.history.replaceState(null, "", url);
+      } else {
+        url.searchParams.delete("q");
+        window.history.replaceState(null, "", url);
+      }
+    };
+
+    let timer = 0;
+    input?.addEventListener("input", () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(run, 120);
+    });
+
+    const initial = new URLSearchParams(window.location.search).get("q");
+    if (initial && input) {
+      input.value = initial;
+      run();
+    }
+  }
+</script>

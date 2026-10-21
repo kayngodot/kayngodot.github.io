@@ -1,0 +1,97 @@
+---
+import { SITE } from "../../blog.config.mjs";
+import { withBase } from "../lib/posts";
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  active?: string;
+  type?: string;
+}
+
+const {
+  title,
+  description = SITE.description,
+  active = "",
+  type = "website",
+} = Astro.props;
+
+const pageTitle = title ? `${title} | ${SITE.title}` : SITE.title;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? SITE.url).href;
+---
+
+<!doctype html>
+<html lang={SITE.language}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href={withBase("/apple-touch-icon.png")}
+    />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={SITE.title}
+      href={withBase("/rss.xml")}
+    />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={SITE.title} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到正文</a>
+    <SiteHeader active={active} />
+    <main id="main">
+      <slot />
+    </main>
+    <SiteFooter />
+
+    <script>
+      const menuToggle = document.querySelector("[data-menu-toggle]");
+      const menu = document.querySelector("[data-menu]");
+
+      if (menuToggle && menu) {
+        const setMenu = (open: boolean) => {
+          menu.classList.toggle("is-open", open);
+          menuToggle.setAttribute("aria-expanded", String(open));
+          menuToggle.textContent = open ? "关闭" : "菜单";
+        };
+
+        menuToggle.addEventListener("click", () => {
+          setMenu(!menu.classList.contains("is-open"));
+        });
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") setMenu(false);
+        });
+
+        document.addEventListener("click", (event) => {
+          const target = event.target as Node;
+          if (
+            menu.classList.contains("is-open") &&
+            !menu.contains(target) &&
+            !menuToggle.contains(target)
+          ) {
+            setMenu(false);
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

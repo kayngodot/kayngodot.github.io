@@ -1,0 +1,142 @@
+---
+import type { MarkdownHeading } from "astro";
+import BaseLayout from "./BaseLayout.astro";
+import Toc from "../components/Toc.astro";
+import type { Post } from "../lib/posts";
+import {
+  boardOf,
+  excerptOf,
+  formatDate,
+  postUrl,
+  readingMinutes,
+  tagUrl,
+} from "../lib/posts";
+import "katex/dist/katex.min.css";
+import "../styles/fonts-mono.css";
+
+interface Props {
+  post: Post;
+  headings: MarkdownHeading[];
+  prev: Post | null;
+  next: Post | null;
+}
+
+const { post, headings, prev, next } = Astro.props;
+const board = boardOf(post);
+const date = formatDate(post.data.date);
+const description = post.data.description ?? excerptOf(post, 140);
+const updated = post.data.updated ? formatDate(post.data.updated) : null;
+---
+
+<BaseLayout
+  title={post.data.title}
+  description={description}
+  active={board.key}
+  type="article"
+>
+  <article class="post-shell shell" style={`--accent:${board.accent}`}>
+    <header class="post-header">
+      <div class="post-header__section">{board.title}</div>
+      <h1>{post.data.title}</h1>
+      <div class="post-header__meta">
+        <time datetime={date}>{date}</time>
+        <span>{readingMinutes(post)} 分钟阅读</span>
+        {updated && <span>更新于 {updated}</span>}
+        {post.data.draft && <span class="draft-badge">草稿，仅本地可见</span>}
+      </div>
+      {
+        post.data.tags.length > 0 && (
+          <div class="post-header__tags">
+            {post.data.tags.map((tag) => (
+              <a class="pill" href={tagUrl(tag)}>
+                {tag}
+              </a>
+            ))}
+          </div>
+        )
+      }
+    </header>
+
+    <Toc headings={headings} />
+
+    <div class="post-body" data-post-body>
+      <slot />
+    </div>
+
+    {
+      (prev || next) && (
+        <nav class="post-navigation" aria-label="文章导航">
+          {prev ? (
+            <a class="post-navigation__link" href={postUrl(prev)}>
+              <span class="post-navigation__label">上一篇</span>
+              <time datetime={formatDate(prev.data.date)}>{formatDate(prev.data.date)}</time>
+              <strong>{prev.data.title}</strong>
+            </a>
+          ) : (
+            <span />
+          )}
+          {next ? (
+            <a class="post-navigation__link post-navigation__link--next" href={postUrl(next)}>
+              <span class="post-navigation__label">下一篇</span>
+              <time datetime={formatDate(next.data.date)}>{formatDate(next.data.date)}</time>
+              <strong>{next.data.title}</strong>
+            </a>
+          ) : (
+            <span />
+          )}
+        </nav>
+      )
+    }
+  </article>
+
+  <script>
+    const copyText = async (text: string) => {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        const ok = document.execCommand("copy");
+        textarea.remove();
+        return ok;
+      }
+    };
+
+    document.querySelectorAll<HTMLElement>("[data-post-body] pre").forEach((pre) => {
+      if (pre.closest(".code-frame")) return;
+
+      const frame = document.createElement("div");
+      frame.className = "code-frame";
+
+      const bar = document.createElement("div");
+      bar.className = "code-frame__bar";
+
+      const language = document.createElement("span");
+      language.textContent = pre.dataset.language || "code";
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "code-frame__copy";
+      button.textContent = "复制";
+
+      bar.append(language, button);
+      pre.replaceWith(frame);
+      frame.append(bar, pre);
+
+      button.addEventListener("click", async () => {
+        const ok = await copyText(pre.innerText);
+        button.textContent = ok ? "已复制" : "复制失败";
+        button.classList.toggle("is-copied", ok);
+        window.setTimeout(() => {
+          button.textContent = "复制";
+          button.classList.remove("is-copied");
+        }, 1600);
+      });
+    });
+  </script>
+</BaseLayout>

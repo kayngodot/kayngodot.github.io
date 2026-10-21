@@ -1,0 +1,21 @@
+---
+import { SITE } from "../../blog.config.mjs";
+import { withBase } from "../lib/posts";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="shell shell--wide site-footer__inner">
+    <span>
+      © {year} {SITE.author}{SITE.footerNote ? ` · ${SITE.footerNote}` : ""}
+    </span>
+    <nav aria-label="页脚导航">
+      <a href={withBase("/archives/")}>归档</a>
+      <a href={withBase("/tags/")}>标签</a>
+      <a href={withBase("/about/")}>关于</a>
+      <a href={withBase("/search/")}>搜索</a>
+      <a href={withBase("/rss.xml")}>RSS</a>
+    </nav>
+  </div>
+</footer>

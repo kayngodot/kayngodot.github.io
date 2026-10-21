@@ -1,0 +1,13 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { withBase } from "../lib/posts";
+---
+
+<BaseLayout title="页面不存在" description="你要找的页面不存在。">
+  <section class="not-found shell shell--wide">
+    <p class="post-header__section">404</p>
+    <h1>这一页是空白的。</h1>
+    <p>可能是链接写错了，也可能这篇文章已经被移走。</p>
+    <a class="button-link" href={withBase("/")}>回到首页</a>
+  </section>
+</BaseLayout>
