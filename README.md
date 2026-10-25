@@ -6,7 +6,9 @@
 
 ![首页预览](docs/preview.png)
 
-> 想把它变成自己的博客？先 Fork 或使用模板创建仓库，或把代码下载到本地，然后把仓库名改成 `<你的用户名>.github.io`，再按下面的步骤操作。
+> 在线地址：https://kayngodot.github.io
+>
+> 想基于它做自己的博客？Fork 后把仓库名改成 `<你的用户名>.github.io`，再按下面的步骤操作。
 
 ## 特性
 
@@ -28,8 +30,8 @@
 ### 1. 获取代码并安装依赖
 
 ```bash
-git clone https://github.com/你的用户名/你的用户名.github.io.git
-cd 你的用户名.github.io
+git clone https://github.com/kayngodot/kayngodot.github.io.git
+cd kayngodot.github.io
 npm install
 npm run dev
 ```
@@ -43,18 +45,18 @@ npm run dev
 ```js
 title: "白纸",                        // 站点名
 tagline: "把读过的、写过的……",          // 首页副标题
-author: "你的名字",
-email: "you@example.com",
-url: "https://你的用户名.github.io",   // 必须改对
+author: "kayngodot",
+email: "",                             // 留空则关于页不显示邮箱
+url: "https://kayngodot.github.io",   // 必须和实际地址一致
 ```
 
 `url` 会用于 canonical、站点地图和 RSS。没有改的话，部署后这些地址仍然指向 `YOURNAME`。
 
 ### 3. 部署到 GitHub Pages
 
-如果你还没有自己的 GitHub 仓库，新建一个 **Public** 仓库，仓库名必须是 `<你的用户名>.github.io`。例如用户名是 `yourname`，仓库就叫 `yourname.github.io`。如果你已经 Fork 或推送过代码，直接确认下面的 Pages 设置即可。
+本仓库已经对应 `https://kayngodot.github.io`，并开启了 Pages。日常只需要把改动推送到 `main`。
 
-建好后先进入 **Settings → Pages → Build and deployment**，把 **Source** 选成 **GitHub Actions**。然后再推送代码，第一次 Actions 就能正常部署。
+如果你想从 Fork 或模板新建自己的站点，新建一个 **Public** 仓库，仓库名必须是 `<你的用户名>.github.io`。建好后先进入 **Settings → Pages → Build and deployment**，把 **Source** 选成 **GitHub Actions**，然后再推送代码。
 
 如果代码还没有推到远端：
 
@@ -132,8 +134,8 @@ npm run check:links
 
 ```yaml
 ---
-title: 秋天的傍晚
-date: 2026-10-18
+title: 第一篇文章
+date: 2026-01-01
 tags:
   - 随笔
 ---
@@ -175,7 +177,7 @@ tags:
 
 站点的大部分个性化都在 [`blog.config.mjs`](./blog.config.mjs)：
 
-- **站名、副标题、作者、邮箱、导航文案**：文件顶部
+- **站名、副标题、作者、邮箱、导航文案**：文件顶部。`email` 留空时，关于页不会显示邮箱
 - **两个板块的名字和点缀色**：`boards` 数组，`accent` 支持任意十六进制颜色
 - **首页每个板块显示几篇**：`homeLatest`
 - **页脚文案**：`footerNote`
@@ -272,9 +274,15 @@ base: "/blog/",
 
 文章 URL 由文件名决定，改名等于改网址。旧链接会失效，尽量不要改已发布的文件名。
 
-## 关于示例内容
+## 开始写第一篇
 
-`src/content/posts` 里的 5 篇文章是示例，可以直接删除，换成你自己的。删完后首页会显示「还没有文章」。
+`src/content/posts/work` 和 `life` 已经保留为空目录。现在首页会显示「还没有文章」，这是正常的。直接运行：
+
+```bash
+npm run new -- "第一篇文章" --section life
+```
+
+写完用 `npm run dev` 预览，`npm run ship` 发布。完整的 front matter 和图片用法见上面的「文章格式」。
 
 ---
 

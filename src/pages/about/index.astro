@@ -20,17 +20,21 @@ import { SITE } from "../../../blog.config.mjs";
           我相信写作是一种整理。把一件事写清楚，往往比读完它更能让人明白。
           所以这里的文章不追求时效，也不保证正确，只希望它们在某一天还能被自己读懂。
         </p>
-        <p>
-          如果你对某篇文章有想法，欢迎写信给我：
-          <a href={`mailto:${SITE.email}`}>{SITE.email}</a>。
-        </p>
+        {SITE.email && (
+          <p>
+            如果你对某篇文章有想法，欢迎写信给我：
+            <a href={`mailto:${SITE.email}`}>{SITE.email}</a>。
+          </p>
+        )}
       </div>
 
       <aside class="profile-card">
         <div class="profile-card__eyebrow">{SITE.profileTitle}</div>
         <h2>{SITE.author}</h2>
         <p>{SITE.profileIntro}</p>
-        <p><a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+        {SITE.email && (
+          <p><a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+        )}
       </aside>
     </div>
   </section>

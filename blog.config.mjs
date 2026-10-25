@@ -9,13 +9,14 @@ export const SITE = {
   tagline: "把读过的、写过的、走过的，都留在这里",
   // 搜索引擎和分享卡片上的简介
   description: "记录代码、研究、阅读、音乐与生活。",
-  author: "你的名字",
-  email: "you@example.com",
+  author: "kayngodot",
+  // 留空时，关于页不会显示邮箱
+  email: "",
 
   // 部署地址。换成你自己的 GitHub Pages 地址，例如：
   // https://yourname.github.io
   // 如果部署在子路径（项目仓库），把 base 改成 "/仓库名/"
-  url: "https://YOURNAME.github.io",
+  url: "https://kayngodot.github.io",
   base: "/",
 
   language: "zh-CN",
@@ -31,7 +32,7 @@ export const SITE = {
   // 关于页的自我介绍
   profileTitle: "公开信息",
   profileIntro:
-    "主要记录阅读、代码、音乐和生活。这里是我的自留地，也欢迎通过邮箱联系我。",
+    "主要记录阅读、代码、音乐和生活。这里是我的自留地。",
 
   /**
    * 两个板块。
